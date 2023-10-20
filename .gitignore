@@ -1,0 +1,7 @@
+src/config/load_env.py
+volumes/*
+*.pyc
+*.csv
+*.json
+.env
+.DS_Store

@@ -1,0 +1,13 @@
+openai
+langchain
+python-dotenv
+fastapi
+uvicorn
+azure-cli
+azure-functions
+azure-identity
+tiktoken
+pymilvus
+streamlit
+pandas
+numpy
