@@ -13,7 +13,7 @@ sys.path.append([".."])
 
 
 logger = logging.getLogger(__name__)
-router = APIRouter(tags=["For Test Only"], prefix="/dev")
+router = APIRouter(tags=["For Test Only"], prefix="/test")
 
 
 SYMPTOM = """Giai đoạn rét run: rét run toàn thân, môi tái, nổi da gà. Giai đoạn rét run kéo dài khoảng 30 phút - 2 giờ. [1]
@@ -32,12 +32,11 @@ def test_diagnose(symptoms: Symptom):
     
     try:
         assert type(symptoms.symptom) == str
-        result = dict(diagnose="Bệnh sốt rét",
-                      info={
-                          "explain": SYMPTOM,
-                          "source": ["https://www.vinmec.com/vi/benh/sot-ret-4443/",
-                                     "https://www.vinmec.com/vi/tin-tuc/thong-tin-suc-khoe/suc-khoe-tong-quat/cac-thuoc-dieu-tri-benh-sot-ret/"]
-                      })
+        result = dict(diagnosis="Bệnh sốt rét",
+                    explain=SYMPTOM,
+                    source=["https://www.vinmec.com/vi/benh/sot-ret-4443/",
+                            "https://www.vinmec.com/vi/tin-tuc/thong-tin-suc-khoe/suc-khoe-tong-quat/cac-thuoc-dieu-tri-benh-sot-ret/"]
+                    )
         
         return JSONResponse(
             content={
@@ -53,7 +52,6 @@ def test_diagnose(symptoms: Symptom):
             },
             status_code=500
         )
-    
 
 class Disease(BaseModel):
     name: str
@@ -67,8 +65,9 @@ async def check_medicine(medicine: Medicine, disease: Disease):
     print(medicine)
     print(disease)
     try:
-        result = random.choice(["PHU_HOP", "KHONG_PHU_HOP", "KHONG_XAC_DINH"])
+        result = random.choice(["RELEVANT", "IRRELEVANT", "UNDEFINED"])
         explain = random.choice(["Paracetamol phù hợp để điều trị bệnh, xét với thể trạng bệnh nhân và triệu chứng đang gặp phải.", "Nước tiểu chuột không phù hợp với bệnh nhân. Đây là một chất có hại và không nên sử dụng.", "Một lời cầu nguyện cần xem xét thêm. Vì mặc dù không có vấn đề gì, nhưng bác sĩ nên xem xét lại thuốc này."])
+        print(result)
         return JSONResponse(
             content={
                 "message": "Successfully",
@@ -97,6 +96,7 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
             },
             status_code=200
         )
+    
     except Exception as exc:
         return JSONResponse(
             content={
@@ -107,7 +107,7 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
     
 
 @router.post("/compatible_calculator")
-async def suggest_medicine(medicines: List[Medicine]):
+async def compatible_calculator(medicines: List[Medicine]):
     print(medicines)
     try:
         result = []
@@ -116,9 +116,10 @@ async def suggest_medicine(medicines: List[Medicine]):
                 result.append(dict(source=medicines[i].name, target=medicines[j].name))
         
         for item in result:
-            item["compatibility"] = random.choice(["PHU_HOP", "KHONG_PHU_HOP", "KHONG_XAC_DINH"])
+            item["compatibility"] = random.choice(["RELEVANT", "IRRELEVANT", "UNDEFINED"])
             item["explain"] = "Hai loại thuốc này bla bla..."
                 
+        print(result)
         return JSONResponse(
             content={
                 "message": "Successfully",
@@ -135,7 +136,7 @@ async def suggest_medicine(medicines: List[Medicine]):
         )
 
 @router.post("/internal_fail_test")
-async def suggest_medicine(s):
+async def internal(s):
     try:
         raise Exception("(Intention) Internal Server Error")
     except Exception as exc:

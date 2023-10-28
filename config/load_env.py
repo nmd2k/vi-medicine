@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 
 class ENV:
-    load_dotenv()
+    load_dotenv("/datadrive05/dungnm31/vi-medicine/config/.env")
     API_PORT = os.environ.get("API_PORT")
     API_HOST = os.environ.get("API_HOST")
     OPENAI_KEY = os.environ.get("OPENAI_KEY")

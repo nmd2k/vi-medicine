@@ -23,4 +23,3 @@ MODEL_DEPLOYMENT = env.AZ_OAI_MODEL
 credential = DefaultAzureCredential(additionally_allowed_tenants=['*'])
 client = SecretClient(vault_url=KVUri, credential=credential)
 OPENAI_API_KEY = client.get_secret(secretName).value
-LLAMA2_API_SERVICE = env.LLAMA2_API_SERVICE

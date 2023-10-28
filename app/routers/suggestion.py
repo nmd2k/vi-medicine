@@ -15,7 +15,7 @@ from app.exception.custom_exception import CustomException
 from utils.utils import latency_benchmark
 
 logger = logging.getLogger(__name__)
-router = APIRouter(tags=["Medicine Suggestion"], prefix="/test")
+router = APIRouter(tags=["Medicine Suggestion"], prefix="/dev")
 
 class Disease(BaseModel):
     name: str
@@ -35,9 +35,6 @@ async def diagnose(symptoms: Symptom):
         assert type(symptoms.symptom) == str
         agent = MedicineAgent()
         result = await agent.diagnose(symptoms=symptoms)
-        
-        result["info"]["symptoms"] = result["info"]["explain"]
-        
         return JSONResponse(
             content={
                 "message": "Successfully",
@@ -59,7 +56,7 @@ async def check_medicine(medicine: Medicine, disease: Disease):
         agent = MedicineAgent()
         result = await agent.check_medicine(medicine=medicine,
                                             disease=disease)
-
+        
         return JSONResponse(
             content={
                 "message": "Successfully",
@@ -80,7 +77,6 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
     try:
         agent = MedicineAgent()
         result = await agent.suggest_medicine(disease=disease, listed=listed)
-        
         return JSONResponse(
             content={
                 "message": "Successfully",
@@ -99,23 +95,21 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
 
 @router.post("/compatible_calculator")
 async def compatible_calculator(medicines: List[Medicine]):
-    try:
-        agent = MedicineAgent()
-        result = await agent.compatible_calculator(medicines)
-        
-        print(result)
-                
-        return JSONResponse(
-            content={
-                "message": "Successfully",
-                "content": result
-            },
-            status_code=200
-        )
-    except Exception as exc:
-        return JSONResponse(
-            content={
-                "message": str(exc)
-            },
-            status_code=500
-        )
+    # try:
+    agent = MedicineAgent()
+    result = await agent.compatible_calculator(medicines)
+    print(result)
+    return JSONResponse(
+        content={
+            "message": "Successfully",
+            "content": result
+        },
+        status_code=200
+    )
+    # except Exception as exc:
+    #     return JSONResponse(
+    #         content={
+    #             "message": str(exc)
+    #         },
+    #         status_code=500
+    #     )

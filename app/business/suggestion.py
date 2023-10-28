@@ -7,7 +7,6 @@ import random
 import json
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from langchain.prompts import PromptTemplate
 from langchain.schema.messages import HumanMessage, SystemMessage
 from langchain.embeddings.openai import OpenAIEmbeddings
 
@@ -16,15 +15,15 @@ from pymilvus import (
     Collection,
 )
 
-from utils.prompts import *
+from utils.en_prompts import *
 from utils.chatmodel import ChatModel
 from app.exception.custom_exception import CustomException
 import re
 
-def parser_result(string):
-    matches = re.search(r'\{([^}]*)\}', string)
+# def parser_result(string):
+#     matches = re.search(r'\{([^}]*)\}', string)
 
-    return matches.group()
+#     return matches.group()
 
 class MedicineAgent:
     def __init__(self,
@@ -43,11 +42,11 @@ class MedicineAgent:
             request_timeout=request_timeout,
             **kwargs
         )
-        self.illness_collect = Collection("illness")
-        self.drug_collect = Collection("drug")
-        self.usage_collect = Collection("drug_usage")
-        for collect in [self.illness_collect, self.drug_collect, self.usage_collect]:
-            collect.load()
+        self.illness_collect = Collection("en_illness")
+        self.drug_collect = Collection("en_drug")
+        # self.usage_collect = Collection("drug_usage")
+        # for collect in [self.illness_collect, self.drug_collect, self.usage_collect]:
+        #     collect.load()
         
     def generate(self, message, prompt=None):
         """
@@ -114,7 +113,7 @@ class MedicineAgent:
         for result in results[0]:
             for field in output_fields:
                 if field == "url":
-                    doc += "Nguồn: "
+                    doc += "Source: "
                 doc += result.entity.get(field) + "\n"
             doc += "\n"
 
@@ -130,8 +129,8 @@ class MedicineAgent:
         for result in results:
             for field in output_fields:
                 if field == "url":
-                    doc += "Nguồn: "
-                doc += result.entity.get(field) + "\n"
+                    doc += "Source: "
+                doc += result[field] + "\n"
             doc += "\n"
         return doc
 
@@ -145,13 +144,13 @@ class MedicineAgent:
         doc = self._search(
             diagnose_input,
             collection=self.illness_collect,
-            output_fields=["title", "diagnosis", "summary", "url"],
+            output_fields=["name", "diagnosis", "symptom_summary", "url"],
             top_k=5,
         )
         
         message = DIAGNOSE_TEMPLATE.format(disease_info=doc, symptom=diagnose_input)
         response = self.generate(message, DIAGNOSE_PROMPT)
-        
+    
         return json.loads(response)
 
 
@@ -160,46 +159,28 @@ class MedicineAgent:
         # 2. query medicine usage
         # 3. send to openai to compare 1. and 2.
         
-        # disease_doc = self._search(
-        #     disease.name,
-        #     collection=self.illness_collect,
-        #     output_fields=["title", "treatment", "overview"],
-        #     top_k=1,
-        # )
-        
-        # medicine_doc = self._search(
-        #     medicine.name,
-        #     collection=self.drug_collect,
-        #     output_fields=["name", "uses", "warning",],
-        #     top_k=2,
-        # )
-        
         disease_doc = self._query(
-            field="title",
+            field="name",
             value=disease.name,
             collection=self.illness_collect,
-            output_fields=["title", "treatment", "overview"],
+            output_fields=["name", "overview", "treatment"],
             top_k=1
         )
+        # disease_doc = self.generate(disease_doc, SUMMARIZE_PROMPT)
         
         medicine_doc = self._query(
             field="name",
             value=medicine.name,
             collection=self.drug_collect,
-            output_fields=["name", "uses", "warning"],
+            output_fields=["name", "proper_use"],
             top_k=1
         )
+        # medicine_doc = self.generate(medicine_doc, SUMMARIZE_PROMPT)
         
-        usage_doc = self._search(
-            medicine.name,
-            collection=self.usage_collect,
-            output_fields=["title", "description"],
-            top_k=3,
-        )
-        
+
         message = CHECK_MEDICINE_TEMPLATE.format(
             disease_doc=disease_doc,
-            drug_doc=medicine_doc + "\n" + usage_doc,
+            drug_doc=medicine_doc, # + "\n" + usage_doc,
             drug=medicine.name,
             disease=disease.name
         )
@@ -214,7 +195,7 @@ class MedicineAgent:
         disease_doc = self._search(
             disease.name,
             collection=self.illness_collect,
-            output_fields=["title", "treatment"],
+            output_fields=["name", "overview", "treatment"],
             top_k=3,
         )
         
@@ -226,20 +207,14 @@ class MedicineAgent:
         # result = random.choice(["Paracetamol", "Quinine"])
         # explain = random.choice(["Paracetamol phù hợp để điều trị bệnh, xét với thể trạng bệnh nhân và triệu chứng đang gặp phải.", "Nước tiểu chuột không phù hợp với bệnh nhân. Đây là một chất có hại và không nên sử dụng.", "Một lời cầu nguyện cần xem xét thêm. Vì mặc dù không có vấn đề gì, nhưng bác sĩ nên xem xét lại thuốc này."])
         response = self.generate(message, SUGGEST_MEDICINE_PROMPT)
-        response = json.loads(response)
+        
+        if "No specific suggestion" in response:
+            response = dict(suggestion="No specific suggestion", 
+                            explain=response.replace("No specific suggestion", "").strip())
+        else:
+            response = json.loads(response)
         
         return response
-        
-        # drug_name = response["suggestion"]
-        
-        # drug_name = self._search(
-        #     drug_name,
-        #     collection=self.drug_collect,
-        #     output_fields=["name"],
-        #     top_k=1,
-        # ).strip()
-        
-        # return dict(suggestion=disease_doc, explain=response["explain"])
     
     
     async def compatible_calculator(self, medicines: List):
@@ -260,20 +235,27 @@ class MedicineAgent:
         
         return results 
 
+    @staticmethod
+    def parse_result(string):
+        return dict(compatibility=string.split("\n")[0], explain=' '.join(string.split("\n")[1:]))
+
     def _check_two_drugs(self, drug1, drug2):
-        print(drug1, drug2)
         drug1_doc = self._search(
             drug1,
             collection=self.drug_collect,
-            output_fields=["uses", "caution", "warning"],
+            output_fields=["proper_use", "precautions"],
             top_k=1,
         )
+        # drug1_doc = self.generate(drug1_doc, SUMMARIZE_PROMPT)
+        
+        
         drug2_doc = self._search(
             drug2,
             collection=self.drug_collect,
-            output_fields=["uses", "caution", "warning"],
+            output_fields=["proper_use", "precautions"],
             top_k=1,
         )
+        # drug2_doc = self.generate(drug2_doc, SUMMARIZE_PROMPT)
         
         message = COMPATIBLE_TEMPLATE.format(
             drug_info=drug1_doc+"\n"+drug2_doc,
@@ -281,10 +263,11 @@ class MedicineAgent:
         )
         try:
             response = self.generate(message, COMPATIBLE_PROMPT)
+            # response = self.parse_result(response)
             response = json.loads(response)
             response["source"] = drug1
             response["target"] = drug2
-            
+        
         except Exception:
             return
 
