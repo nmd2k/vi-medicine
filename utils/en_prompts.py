@@ -89,9 +89,8 @@ The conclusion can be one of the following three forms:
 "IRRELEVANT": if the medications are not compatible for treating the disease.
 "UNDEFINED": if there is not enough information to make a conclusion, and further evaluation by a doctor is needed.
 
-The conclusion must adhere to the format below:
-COMPATIBILITY
-Explanation for the conclusion.
+The conclusion must adhere to the JSON format below:
+{"compatibility": "string", "explain": "string"}
 
 For example:
 ### Medication Information
@@ -100,8 +99,7 @@ Medication B: can be used together with A
 ### List of Medications to Consider
 Medication A and Medication B
 ### Conclusion:
-RELEVANT
-Medication B is compatible for use with Medication A because...
+{"compatibility": "RELEVANT", "explain": "Medication B is compatible for use with Medication A"}
 """
 
 COMPATIBLE_TEMPLATE = """
