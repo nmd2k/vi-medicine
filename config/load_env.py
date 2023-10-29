@@ -12,3 +12,9 @@ class ENV:
     AZ_OAI_MODEL = os.environ.get("AZ_OAI_MODEL")
     AZ_OAI_VERSION = os.environ.get("AZ_OAI_VERSION")
     AZ_OAI_BASE = os.environ.get("AZ_OAI_BASE")
+    
+    ### GPT4 OpenAI ###
+    GPT4_API_BASE=os.environ.get("GPT4_API_BASE")
+    GPT4_API_VERSION=os.environ.get("GPT4_API_VERSION")
+    GPT4_API_KEY=os.environ.get("GPT4_API_KEY")
+    GPT4_DEPLOYMENT_NAME=os.environ.get("GPT4_DEPLOYMENT_NAME")

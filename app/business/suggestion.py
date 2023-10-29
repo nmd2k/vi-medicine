@@ -140,6 +140,7 @@ class MedicineAgent:
         # 3. parse the result
         diagnose_input = symptoms.symptom
         user_info = symptoms.user_info
+        print(user_info)
         
         doc = self._search(
             diagnose_input,
@@ -208,11 +209,11 @@ class MedicineAgent:
         # explain = random.choice(["Paracetamol phù hợp để điều trị bệnh, xét với thể trạng bệnh nhân và triệu chứng đang gặp phải.", "Nước tiểu chuột không phù hợp với bệnh nhân. Đây là một chất có hại và không nên sử dụng.", "Một lời cầu nguyện cần xem xét thêm. Vì mặc dù không có vấn đề gì, nhưng bác sĩ nên xem xét lại thuốc này."])
         response = self.generate(message, SUGGEST_MEDICINE_PROMPT)
         
-        if "No specific suggestion" in response:
-            response = dict(suggestion="No specific suggestion", 
-                            explain=response.replace("No specific suggestion", "").strip())
-        else:
-            response = json.loads(response)
+        # if "No specific suggestion" in response:
+        #     response = dict(suggestion="No specific suggestion", 
+        #                     explain=response.replace("No specific suggestion", "").strip())
+        # else:
+        response = json.loads(response)
         
         return response
     

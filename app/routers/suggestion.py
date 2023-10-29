@@ -95,21 +95,20 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
 
 @router.post("/compatible_calculator")
 async def compatible_calculator(medicines: List[Medicine]):
-    # try:
-    agent = MedicineAgent()
-    result = await agent.compatible_calculator(medicines)
-    print(result)
-    return JSONResponse(
-        content={
-            "message": "Successfully",
-            "content": result
-        },
-        status_code=200
-    )
-    # except Exception as exc:
-    #     return JSONResponse(
-    #         content={
-    #             "message": str(exc)
-    #         },
-    #         status_code=500
-    #     )
+    try:
+        agent = MedicineAgent()
+        result = await agent.compatible_calculator(medicines)
+        return JSONResponse(
+            content={
+                "message": "Successfully",
+                "content": result
+            },
+            status_code=200
+        )
+    except Exception as exc:
+        return JSONResponse(
+            content={
+                "message": str(exc)
+            },
+            status_code=500
+        )

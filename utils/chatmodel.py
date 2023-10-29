@@ -15,7 +15,9 @@ from config.OAIConfig import API_BASE, \
                             API_VERSION, \
                             MODEL_DEPLOYMENT, \
                             OPENAI_API_KEY
-                
+
+from config.load_env import ENV
+env = ENV()
 
 DUMMY_PROMPT = ("You are useful assistant. "
                 "Follow instruction and answer user question""")
@@ -59,10 +61,10 @@ class ChatModel:
         if chatmodel == "openai":
             assert OPENAI_AVAILABLE, "Missing openai module, try `pip install openai`"
             self.generative_model = AzureChatOpenAI(
-                openai_api_base     = API_BASE,
-                openai_api_version  = API_VERSION,
-                openai_api_key      = OPENAI_API_KEY,
-                deployment_name     = MODEL_DEPLOYMENT,
+                openai_api_base     = env.GPT4_API_BASE,
+                openai_api_version  = env.GPT4_API_VERSION,
+                openai_api_key      = env.GPT4_API_KEY,
+                deployment_name     = env.GPT4_DEPLOYMENT_NAME,
                 max_retries         = self.max_retries,
                 request_timeout     = self.request_timeout,
                 streaming           = self.stream,
