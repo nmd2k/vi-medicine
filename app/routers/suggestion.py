@@ -43,6 +43,7 @@ async def diagnose(symptoms: Symptom):
             status_code=200
         )
     except Exception as exc:
+        logger.error(str(exc))
         return JSONResponse(
             content={
                 "message": str(exc)
@@ -65,6 +66,7 @@ async def check_medicine(medicine: Medicine, disease: Disease):
             status_code=200
         )
     except Exception as exc:
+        logger.error(str(exc))
         return JSONResponse(
             content={
                 "message": str(exc)
@@ -85,6 +87,7 @@ async def suggest_medicine(disease: Disease, listed: List[Medicine] = None):
             status_code=200
         )
     except Exception as exc:
+        logger.error(str(exc))
         return JSONResponse(
             content={
                 "message": str(exc)
@@ -106,6 +109,7 @@ async def compatible_calculator(medicines: List[Medicine]):
             status_code=200
         )
     except Exception as exc:
+        logger.error(str(exc))
         return JSONResponse(
             content={
                 "message": str(exc)

@@ -28,7 +28,7 @@ Your task is to conclude whether that medication is suitable for treating the me
 
 The conclusion can be one of the following three forms:
 - "RELEVANT": if the medication is suitable for treating the disease.
-- "IRRELEVANT": if the medication is not suitable for treating the disease.
+- "CONFLICT": if the medication is not suitable for treating the disease.
 - "UNDEFINED": if there is not enough information to make a conclusion, and further evaluation by a doctor is needed.
 
 The conclusion must adhere to the JSON format below:
@@ -43,7 +43,7 @@ Medication C cannot be used to treat Disease A
 ### Target disease: Disease A
 ### Target medication: Medication C
 ### Conclusion:
-{"review": "IRRELEVANT", "explain": "Medication C is not suitable for treating Disease A"}
+{"review": "CONFLICT", "explain": "Medication C is not suitable for treating Disease A"}
 """
 
 CHECK_MEDICINE_TEMPLATE = """
@@ -82,11 +82,11 @@ SUGGEST_MEDICINE_TEMPLATE = """
 
 COMPATIBLE_PROMPT = """
 The doctor will provide the names of two medications and related medication documents.
-Your task is to conclude whether these two medications are suitable for use together based on the provided information about the medications and their relation to the disease.
+Your task is to conclude whether these two medications are able for use together based on the provided information about the medications and their usage cautions.
 
 The conclusion can be one of the following three forms:
-"RELEVANT": if the medications are compatible for treating the disease.
-"IRRELEVANT": if the medications are not compatible for treating the disease.
+"RELEVANT": if the medications are able for use together.
+"CONFLICT": if the medications are conflict to use with each other.
 "UNDEFINED": if there is not enough information to make a conclusion, and further evaluation by a doctor is needed.
 
 The conclusion must adhere to the JSON format below:

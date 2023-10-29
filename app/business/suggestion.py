@@ -140,7 +140,6 @@ class MedicineAgent:
         # 3. parse the result
         diagnose_input = symptoms.symptom
         user_info = symptoms.user_info
-        print(user_info)
         
         doc = self._search(
             diagnose_input,
@@ -167,6 +166,7 @@ class MedicineAgent:
             output_fields=["name", "overview", "treatment"],
             top_k=1
         )
+        disease_doc = disease_doc[:4000]
         # disease_doc = self.generate(disease_doc, SUMMARIZE_PROMPT)
         
         medicine_doc = self._query(
@@ -176,6 +176,7 @@ class MedicineAgent:
             output_fields=["name", "proper_use"],
             top_k=1
         )
+        medicine_doc = medicine_doc[:4000]
         # medicine_doc = self.generate(medicine_doc, SUMMARIZE_PROMPT)
         
 
@@ -199,6 +200,7 @@ class MedicineAgent:
             output_fields=["name", "overview", "treatment"],
             top_k=3,
         )
+        disease_doc = disease_doc[:7000]
         
         # if listed:
         #     exclude = " ".join(listed)
@@ -244,18 +246,20 @@ class MedicineAgent:
         drug1_doc = self._search(
             drug1,
             collection=self.drug_collect,
-            output_fields=["proper_use", "precautions"],
+            output_fields=["description", "proper_use", "precautions"],
             top_k=1,
         )
+        drug1_doc = drug1_doc[:4000]
         # drug1_doc = self.generate(drug1_doc, SUMMARIZE_PROMPT)
         
         
         drug2_doc = self._search(
             drug2,
             collection=self.drug_collect,
-            output_fields=["proper_use", "precautions"],
+            output_fields=["description", "proper_use", "precautions"],
             top_k=1,
         )
+        drug2_doc = drug2_doc[:4000]
         # drug2_doc = self.generate(drug2_doc, SUMMARIZE_PROMPT)
         
         message = COMPATIBLE_TEMPLATE.format(
