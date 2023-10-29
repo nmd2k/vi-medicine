@@ -166,7 +166,7 @@ class MedicineAgent:
             output_fields=["name", "overview", "treatment"],
             top_k=1
         )
-        disease_doc = disease_doc[:4000]
+        disease_doc = disease_doc[:8000]
         # disease_doc = self.generate(disease_doc, SUMMARIZE_PROMPT)
         
         medicine_doc = self._query(
@@ -176,7 +176,7 @@ class MedicineAgent:
             output_fields=["name", "proper_use"],
             top_k=1
         )
-        medicine_doc = medicine_doc[:4000]
+        medicine_doc = medicine_doc[:8000]
         # medicine_doc = self.generate(medicine_doc, SUMMARIZE_PROMPT)
         
 
@@ -249,7 +249,7 @@ class MedicineAgent:
             output_fields=["description", "proper_use", "precautions"],
             top_k=1,
         )
-        drug1_doc = drug1_doc[:4000]
+        drug1_doc = drug1_doc[:8000]
         # drug1_doc = self.generate(drug1_doc, SUMMARIZE_PROMPT)
         
         
@@ -259,7 +259,7 @@ class MedicineAgent:
             output_fields=["description", "proper_use", "precautions"],
             top_k=1,
         )
-        drug2_doc = drug2_doc[:4000]
+        drug2_doc = drug2_doc[:8000]
         # drug2_doc = self.generate(drug2_doc, SUMMARIZE_PROMPT)
         
         message = COMPATIBLE_TEMPLATE.format(
