@@ -1,4 +1,7 @@
-# ViMedicine: An Vietnamese LLMs agent for drug and illness suggestion
+# ViMedicine: An LLMs agent for drug and illness suggestion
+
+<video src='https://github.com/user-attachments/assets/07828877-0567-40ac-b40f-0e3e37d949fd' width=180/>
+Product Demonstration
 
 ## Introduction
 In this project, we present a medicine agent for Vietnamese medical suggestion. 
@@ -47,6 +50,7 @@ Since the performance heavily depends on database (in vector store) quality, the
   howpublished = {\url{https://github.com/nmd2k/vi-medicine/}},
 }
 ```
+
 **Our team:**
 - Tran Tuan Anh*
 - Phan Quang Hung*
