@@ -1,8 +1,5 @@
 # ViMedicine: An LLMs agent for drug and illness suggestion
 
-<video src='https://github.com/user-attachments/assets/07828877-0567-40ac-b40f-0e3e37d949fd' width=180/>
-Product Demonstration
-
 ## Introduction
 In this project, we present a medicine agent for Vietnamese medical suggestion. 
 The medicine agent can:
@@ -57,3 +54,7 @@ Since the performance heavily depends on database (in vector store) quality, the
 - Dung Manh Nguyen*
 
 *: Equals contribution
+
+<video src='https://github.com/user-attachments/assets/07828877-0567-40ac-b40f-0e3e37d949fd' width=180/>
+Product Demonstration
+
